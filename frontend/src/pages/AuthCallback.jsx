@@ -16,6 +16,8 @@ const AuthCallback = () => {
       const userParam = urlParams.get('user');
       const error = urlParams.get('error');
 
+      console.log('AuthCallback - URL params:', { accessToken: !!accessToken, refreshToken: !!refreshToken, userParam: !!userParam, error });
+
       if (error) {
         console.error('Auth error:', error);
         toast.error('Authentication failed');
@@ -26,7 +28,7 @@ const AuthCallback = () => {
       if (accessToken && refreshToken && userParam) {
         try {
           const user = JSON.parse(decodeURIComponent(userParam));
-          console.log('Auth successful:', user);
+          console.log('Auth successful - User role:', user.role);
           
           // Store in localStorage
           localStorage.setItem('accessToken', accessToken);
@@ -59,6 +61,7 @@ const AuthCallback = () => {
         }
       } else {
         console.error('Missing authentication data');
+        toast.error('Login failed - missing data');
         navigate('/home');
       }
     };
@@ -69,7 +72,7 @@ const AuthCallback = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <LoadingSpinner size="lg" />
-      <p className="mt-4 text-gray-600 dark:text-gray-400">Completing sign in...</p>
+      <p className="mt-4 text-gray-600 dark:text-gray-400">Completing Google sign in...</p>
     </div>
   );
 };
