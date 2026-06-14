@@ -5,10 +5,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+console.log('Passport config - Backend URL:', BACKEND_URL);
+console.log('Passport config - Frontend URL:', FRONTEND_URL);
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/google/callback`,
+    callbackURL: `${BACKEND_URL}/api/auth/google/callback`,
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -17,8 +23,7 @@ passport.use(new GoogleStrategy({
       let user = await User.findOne({ email: profile.emails[0].value });
       
       if (user) {
-        // User exists, return user
-        console.log('Existing user found:', user.email);
+        console.log('Existing user found:', user.email, 'Role:', user.role);
         return done(null, user);
       }
       
