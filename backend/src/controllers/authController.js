@@ -212,50 +212,35 @@ export const changePassword = asyncHandler(async (req, res) => {
 // @desc    Google Auth Callback Handler (for redirect flow)
 // @route   GET /api/auth/google/callback (handled in routes)
 export const googleAuthCallback = asyncHandler(async (req, res) => {
-  // This function is called after passport authenticates
-  // The user is attached to req.user by passport
   const user = req.user;
-  
+
   if (!user) {
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
   }
-  
-  if (user.banned) {
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=account_banned`);
-  }
-  
+
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
-  
+
   user.refreshToken = refreshToken;
-  user.lastLogin = new Date();
+  user.isOnline = true;
+  user.lastSeen = new Date();
   await user.save();
-  
+
   const userData = {
     _id: user._id,
     name: user.name,
     email: user.email,
     role: user.role,
-    avatar: user.avatar,
-    phone: user.phone,
-    title: user.title,
-    bio: user.bio,
-    skills: user.skills,
-    rating: user.rating,
-    totalReviews: user.totalReviews,
-    completedProjects: user.completedProjects,
-    totalEarnings: user.totalEarnings,
-    banned: user.banned,
-    isOnline: user.isOnline,
-    lastSeen: user.lastSeen
   };
-  
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  const redirectUrl = `${frontendUrl}/auth/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodeURIComponent(JSON.stringify(userData))}`;
-  
-  res.redirect(redirectUrl);
-});
 
+  const redirectUrl =
+    `${process.env.FRONTEND_URL}/google-callback?` +
+    `accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodeURIComponent(
+      JSON.stringify(userData)
+    )}`;
+
+  return res.redirect(redirectUrl);
+});
 // @desc    Google Token Login (for frontend Google SDK)
 // @route   POST /api/auth/google/token
 export const googleTokenLogin = asyncHandler(async (req, res) => {
