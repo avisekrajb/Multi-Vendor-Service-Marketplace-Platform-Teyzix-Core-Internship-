@@ -213,20 +213,24 @@ export const changePassword = asyncHandler(async (req, res) => {
 // @route   GET /api/auth/google/callback (handled in routes)
 // @desc    Google Auth Callback Handler (for redirect flow)
 // @route   GET /api/auth/google/callback (handled in routes)
+// @desc    Google Auth Callback Handler (for redirect flow)
+// @route   GET /api/auth/google/callback (handled in routes)
 export const googleAuthCallback = asyncHandler(async (req, res) => {
   console.log('=== GOOGLE CALLBACK HIT ===');
-  console.log('User from passport:', req.user);
+  console.log('User from passport:', req.user ? req.user.email : 'NO USER');
   
   const user = req.user;
   
   if (!user) {
     console.error('No user found in callback');
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    return res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
   }
   
   if (user.banned) {
     console.error('User is banned:', user.email);
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=account_banned`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    return res.redirect(`${frontendUrl}/login?error=account_banned`);
   }
   
   // Generate tokens
@@ -236,6 +240,7 @@ export const googleAuthCallback = asyncHandler(async (req, res) => {
   // Store refresh token in user document
   user.refreshToken = refreshToken;
   user.lastLogin = new Date();
+  user.isOnline = true;
   await user.save();
   
   // Prepare user data for frontend
@@ -245,17 +250,17 @@ export const googleAuthCallback = asyncHandler(async (req, res) => {
     email: user.email,
     role: user.role,
     avatar: user.avatar,
-    phone: user.phone,
-    title: user.title,
-    bio: user.bio,
-    skills: user.skills,
-    rating: user.rating,
-    totalReviews: user.totalReviews,
-    completedProjects: user.completedProjects,
-    totalEarnings: user.totalEarnings,
-    banned: user.banned,
-    isOnline: user.isOnline,
-    lastSeen: user.lastSeen
+    phone: user.phone || '',
+    title: user.title || '',
+    bio: user.bio || '',
+    skills: user.skills || [],
+    rating: user.rating || 0,
+    totalReviews: user.totalReviews || 0,
+    completedProjects: user.completedProjects || 0,
+    totalEarnings: user.totalEarnings || 0,
+    banned: user.banned || false,
+    isOnline: user.isOnline || false,
+    lastSeen: user.lastSeen || new Date()
   };
   
   // Encode user data for URL
@@ -265,7 +270,8 @@ export const googleAuthCallback = asyncHandler(async (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   const redirectUrl = `${frontendUrl}/auth/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodedUser}`;
   
-  console.log('Redirecting to:', redirectUrl);
+  console.log('Redirecting to frontend:', redirectUrl);
+  console.log('User role:', user.role);
   
   res.redirect(redirectUrl);
 });
