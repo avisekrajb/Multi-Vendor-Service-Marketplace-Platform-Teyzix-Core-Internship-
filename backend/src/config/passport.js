@@ -8,14 +8,17 @@ dotenv.config();
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    callbackURL: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/google/callback`,
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
+      console.log('Google profile received:', profile.emails[0]?.value);
+      
       let user = await User.findOne({ email: profile.emails[0].value });
       
       if (user) {
         // User exists, return user
+        console.log('Existing user found:', user.email);
         return done(null, user);
       }
       
@@ -30,8 +33,10 @@ passport.use(new GoogleStrategy({
         isGoogleLogin: true,
       });
       
+      console.log('New user created:', user.email);
       return done(null, user);
     } catch (error) {
+      console.error('Google strategy error:', error);
       return done(error, null);
     }
   }
