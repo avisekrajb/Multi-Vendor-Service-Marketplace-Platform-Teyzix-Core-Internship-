@@ -211,35 +211,63 @@ export const changePassword = asyncHandler(async (req, res) => {
 
 // @desc    Google Auth Callback Handler (for redirect flow)
 // @route   GET /api/auth/google/callback (handled in routes)
+// @desc    Google Auth Callback Handler (for redirect flow)
+// @route   GET /api/auth/google/callback (handled in routes)
 export const googleAuthCallback = asyncHandler(async (req, res) => {
+  console.log('=== GOOGLE CALLBACK HIT ===');
+  console.log('User from passport:', req.user);
+  
   const user = req.user;
-
+  
   if (!user) {
-    return res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`);
+    console.error('No user found in callback');
+    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=google_auth_failed`);
   }
-
+  
+  if (user.banned) {
+    console.error('User is banned:', user.email);
+    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?error=account_banned`);
+  }
+  
+  // Generate tokens
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
-
+  
+  // Store refresh token in user document
   user.refreshToken = refreshToken;
-  user.isOnline = true;
-  user.lastSeen = new Date();
+  user.lastLogin = new Date();
   await user.save();
-
+  
+  // Prepare user data for frontend
   const userData = {
     _id: user._id,
     name: user.name,
     email: user.email,
     role: user.role,
+    avatar: user.avatar,
+    phone: user.phone,
+    title: user.title,
+    bio: user.bio,
+    skills: user.skills,
+    rating: user.rating,
+    totalReviews: user.totalReviews,
+    completedProjects: user.completedProjects,
+    totalEarnings: user.totalEarnings,
+    banned: user.banned,
+    isOnline: user.isOnline,
+    lastSeen: user.lastSeen
   };
-
-  const redirectUrl =
-    `${process.env.FRONTEND_URL}/google-callback?` +
-    `accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodeURIComponent(
-      JSON.stringify(userData)
-    )}`;
-
-  return res.redirect(redirectUrl);
+  
+  // Encode user data for URL
+  const encodedUser = encodeURIComponent(JSON.stringify(userData));
+  
+  // Redirect to frontend callback handler
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const redirectUrl = `${frontendUrl}/auth/google/callback?accessToken=${accessToken}&refreshToken=${refreshToken}&user=${encodedUser}`;
+  
+  console.log('Redirecting to:', redirectUrl);
+  
+  res.redirect(redirectUrl);
 });
 // @desc    Google Token Login (for frontend Google SDK)
 // @route   POST /api/auth/google/token
