@@ -15,7 +15,7 @@ import HowItWorksPage from './pages/HowItWorksPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import CloudinaryPhotos from './pages/CloudinaryPhotos';
-import GoogleCallback from './pages/GoogleCallback';
+import AuthCallback from './pages/AuthCallback';
 
 // Customer Pages
 import CustomerDashboard from './pages/CustomerDashboard/CustomerDashboard';
@@ -76,8 +76,8 @@ function App() {
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPage />} />
               
-              {/* Google OAuth Callback Route */}
-              <Route path="/auth/google/callback" element={<GoogleCallback />} />
+              {/* Google OAuth Callback Route - MUST be before wildcard routes */}
+              <Route path="/auth/google/callback" element={<AuthCallback />} />
               
               {/* Cloudinary Photos - Admin only (protected by component) */}
               <Route path="/allphotos" element={<CloudinaryPhotos />} />
