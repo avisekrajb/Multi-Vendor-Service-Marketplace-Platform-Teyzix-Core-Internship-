@@ -7,10 +7,14 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "prod": "NODE_ENV=production node src/server.js",
+    "build": "echo 'No build step required'",
     "cloudinary:test": "node working.js",
     "cloudinary:upload": "node test-upload.js",
     "seed": "node src/seed.js",
     "seed:super": "node src/seedSuperAdmin.js"
+  },
+  "engines": {
+    "node": ">=20.0.0 <22.0.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
