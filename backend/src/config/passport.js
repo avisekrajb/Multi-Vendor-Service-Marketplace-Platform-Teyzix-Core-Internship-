@@ -5,11 +5,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+// Get URLs from environment variables
+const BACKEND_URL = process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:5000';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://multi-vendor-service-marketplace.onrender.com';
 
-console.log('Passport config - Backend URL:', BACKEND_URL);
-console.log('Passport config - Frontend URL:', FRONTEND_URL);
+console.log('=== Passport Configuration ===');
+console.log('Backend URL:', BACKEND_URL);
+console.log('Frontend URL:', FRONTEND_URL);
+console.log('Google Client ID configured:', !!process.env.GOOGLE_CLIENT_ID);
+console.log('===============================');
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -18,7 +22,7 @@ passport.use(new GoogleStrategy({
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      console.log('Google profile received:', profile.emails[0]?.value);
+      console.log('Google profile received for email:', profile.emails[0]?.value);
       
       let user = await User.findOne({ email: profile.emails[0].value });
       
@@ -56,6 +60,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     done(null, user);
   } catch (error) {
+    console.error('Deserialize user error:', error);
     done(error, null);
   }
 });
