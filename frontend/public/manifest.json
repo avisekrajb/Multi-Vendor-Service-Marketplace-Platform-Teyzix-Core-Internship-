@@ -1,0 +1,78 @@
+{
+  "short_name": "TEYZIX",
+  "name": "TEYZIX - Nepal's #1 Freelance Service Marketplace",
+  "description": "Connect with skilled professionals for web development, design, marketing, and more. Pay in Nepali Rupees. Get work done on time.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#6366f1",
+  "background_color": "#0d0d12",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["business", "shopping", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Browse Services",
+      "short_name": "Services",
+      "description": "Browse all available services",
+      "url": "/services",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "View your messages",
+      "url": "/messages",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Profile",
+      "short_name": "Profile",
+      "description": "View your profile",
+      "url": "/profile",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Home Page"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Services Page"
+    }
+  ]
+}
